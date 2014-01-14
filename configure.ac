@@ -9,4 +9,4 @@ AC_CONFIG_SRCDIR([src/bframe.c])
 AC_PROG_CC
 AC_PROG_LIBTOOL
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile test/Makefile)
