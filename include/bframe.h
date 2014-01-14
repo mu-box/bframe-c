@@ -14,10 +14,18 @@ typedef struct bframe_s {
 	char			*data;
 } bframe_t;
 
-bframe_t *parse_bframes(char *data, int data_len, int *number_of_frames);
+typedef struct bframe_buffer_s {
+	char	*data;
+	int		len;
+} bframe_buffer_t;
+
+bframe_buffer_t *new_bframe_buffer();
+
+bframe_t *parse_bframes(char *data, int data_len, bframe_buffer_t *bframe_buffer, int *number_of_frames);
 bframe_t *pack_bframe(char *data, int len);
 char *bframe_to_char(bframe_t *bframe, int *len);
 
+void clean_bframe_buffer(bframe_buffer_t *bframe_buffer);
 void clean_bframe(bframe_t *bframe);
 
 #endif // BFRAME_H

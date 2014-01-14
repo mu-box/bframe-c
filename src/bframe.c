@@ -3,8 +3,15 @@
 
 #include "bframe.h"
 
-static char *buffer = NULL;
-static int buffer_len = 0;
+bframe_buffer_t 
+*new_bframe_buffer()
+{
+	bframe_buffer_t *bframe_buffer;
+	bframe_buffer = malloc(sizeof *bframe_buffer);
+	bframe_buffer->data = NULL;
+	bframe_buffer.len = 0;
+	return bframe_buffer;
+}
 
 static int
 count_bframes(char *data, int data_len)
@@ -22,36 +29,49 @@ count_bframes(char *data, int data_len)
 }
 
 bframe_t 
-*parse_char_to_bframes(char *data, int data_len, int *number_of_frames)
+*parse_char_to_bframes(char *data, int data_len, bframe_buffer_t *bframe_buffer, int *number_of_frames)
 {
 	char *local_buffer = NULL;
 	int local_buffer_len = 0;
 	bframe_len_t bframe_len;
 	bframe_t *bframes = NULL;
+	int count = 0;
+	int offset = 0;
 
-	if (buffer == NULL) {
+	if (bframe_buffer->data == NULL) {
 		local_buffer_len = data_len;
 		local_buffer = (char *)malloc(local_buffer_len + 1);
 		local_buffer[local_buffer_len] = '\0';
 		memcpy(local_buffer, data, data_len);
 
 	} else {
-		local_buffer_len = data_len + buffer_len;
+		local_buffer_len = data_len + bframe_buffer.len;
 		local_buffer = (char *)malloc(local_buffer_len + 1);
 		local_buffer[local_buffer_len] = '\0';
-		memcpy(local_buffer, buffer, buffer_len);
-		memcpy(local_buffer + buffer_len, data, data_len);
+		memcpy(local_buffer, bframe_buffer->data, bframe_buffer.len);
+		memcpy(local_buffer + bframe_buffer.len, data, data_len);
 
-		free(buffer);
-		buffer_len = 0;
+		free(bframe_buffer.data);
+		bframe_buffer.data = NULL;
+		bframe_buffer.len = 0;
 	}
 	*number_of_frames = count_bframes(local_buffer, local_buffer_len);
-	if (*number_of_frames) {
-		bframes = malloc((sizeof *bframes) * (*number_of_frames));
-	} else
-	{
-
+	bframes = (bframe_t *)malloc((sizeof *bframes) * (*number_of_frames));
+	while (count < *number_of_frames) {
+		memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
+		bframes[count]->data = (char *)malloc(bframes[count].len.int_len);
+		memcpy(bframes[count]->data, local_buffer + offset + 4, bframes[count].len.int_len);
+		offset += bframes[count].len.int_len + 4;
+		count++
 	}
+	if (offset < local_buffer_len) {
+		bframe_buffer.len = local_buffer_len - offset;
+		bframe_buffer->data = (char *)malloc(bframe_buffer.len + 1);
+		bframe_buffer->data[bframe_buffer.len] = '\0';
+		memcpy(bframe_buffer->data, local_buffer + offset, bframe_buffer.len);
+	}
+	free(local_buffer);
+	local_buffer = NULL;
 	return bframes;
 }
 
