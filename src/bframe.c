@@ -52,18 +52,31 @@ bframe_t
 	{
 
 	}
+	return bframes;
 }
 
 bframe_t 
 *pack_bframe(char *data, int length)
 {
-
+	bframe_t *bframe = (bframe_t *)malloc(sizeof *bframe);
+	bframe.len.int_len = (uint32_t)length;
+	bframe->data = (char *)malloc(length + 1);
+	bframe->data[length] = '\0';
+	memcpy(bframe->data, data, length);
+	return bframe;
 }
 
 char 
 *bframe_to_char(bframe_t *bframe, int *length)
 {
+	char *packed_frame;
 
+	*length = bframe.len.int_len + 4;
+	packed_frame = (char *)malloc((sizeof char ) * (*length) + 1);
+	packed_frame[*length] = '\0'
+	memcpy(packed_frame, &(bframe.len.char_len), 4);
+	memcpy(packed_frame + 4, bframe->data, bframe.len.int_len);
+	return packed_frame;
 }
 
 void clean_bframe(bframe_t *bframe)
