@@ -4,6 +4,10 @@
 #ifndef BFRAME_H
 #define BFRAME_H
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 typedef union bframe_len_s {
 	uint32_t	int_len;
 	char		char_len[4];
