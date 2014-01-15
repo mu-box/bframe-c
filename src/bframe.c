@@ -13,6 +13,17 @@ bframe_buffer_t
 	return bframe_buffer;
 }
 
+bframe_t 
+*new_bframe(char *data, int length)
+{
+	bframe_t *bframe = (bframe_t *)malloc(sizeof *bframe);
+	bframe->len.int_len = (uint32_t)length;
+	bframe->data = (char *)malloc(length + 1);
+	bframe->data[length] = '\0';
+	memcpy(bframe->data, data, length);
+	return bframe;
+}
+
 static int
 count_bframes(char *data, int data_len)
 {
@@ -73,17 +84,6 @@ bframe_t
 	free(local_buffer);
 	local_buffer = NULL;
 	return bframes;
-}
-
-bframe_t 
-*pack_bframe(char *data, int length)
-{
-	bframe_t *bframe = (bframe_t *)malloc(sizeof *bframe);
-	bframe->len.int_len = (uint32_t)length;
-	bframe->data = (char *)malloc(length + 1);
-	bframe->data[length] = '\0';
-	memcpy(bframe->data, data, length);
-	return bframe;
 }
 
 char 

@@ -15,7 +15,7 @@ typedef union bframe_len_s {
 
 typedef struct bframe_s {
 	bframe_len_t	len;
-	char			*data;
+	char			data[];
 } bframe_t;
 
 typedef struct bframe_buffer_s {
@@ -25,8 +25,8 @@ typedef struct bframe_buffer_s {
 
 bframe_buffer_t *new_bframe_buffer();
 
+bframe_t *new_bframe(char *data, int len);
 bframe_t *parse_bframes(char *data, int data_len, bframe_buffer_t *bframe_buffer, int *number_of_frames);
-bframe_t *pack_bframe(char *data, int len);
 char *bframe_to_char(bframe_t *bframe, int *len);
 
 void clean_bframe_buffer(bframe_buffer_t *bframe_buffer);
