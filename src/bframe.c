@@ -27,7 +27,7 @@ bframe_t
 static int
 count_bframes(char *data, int data_len)
 {
-	int count = -1;
+	int count = 0;
 	int offset = 0;
 	bframe_len_t *bframe_len;
 	do {
@@ -35,6 +35,9 @@ count_bframes(char *data, int data_len)
 		bframe_len = (bframe_len_t *)(data + offset);
 		offset += bframe_len->int_len + 4;
 	} while (offset < data_len - 4);
+
+	if (offset > data_len)
+		count--;
 
 	return count;
 }
@@ -70,7 +73,8 @@ bframe_t
 	bframes = (bframe_t *)malloc((sizeof *bframes) * (*number_of_frames));
 	while (count < *number_of_frames) {
 		memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
-		bframes[count].data = (char *)malloc(bframes[count].len.int_len);
+		bframes[count].data = (char *)malloc(bframes[count].len.int_len + 1);
+		bframes[count].data[bframes[count].len.int_len] = '\0';
 		memcpy(bframes[count].data, local_buffer + offset + 4, bframes[count].len.int_len);
 		offset += bframes[count].len.int_len + 4;
 		count++;
@@ -103,4 +107,11 @@ void clean_bframe(bframe_t *bframe)
 {
 	free(bframe->data);
 	bframe->data = NULL;
+}
+
+void clean_bframe_buffer(bframe_buffer_t *bframe_buffer)
+{
+	free(bframe_buffer->data);
+	bframe_buffer->data = NULL;
+	bframe_buffer->len = 0;
 }
