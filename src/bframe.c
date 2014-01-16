@@ -71,7 +71,7 @@ bframe_t
 		bframe_buffer->len = 0;
 	}
 	*number_of_frames = count_bframes(local_buffer, local_buffer_len);
-	bframes = (bframe_t *)malloc((sizeof *bframes) * (*number_of_frames));
+	bframes = (bframe_t **)malloc((sizeof *bframes) * (*number_of_frames));
 	while (count < *number_of_frames) {
 		bframes[count]= new_bframe(local_buffer + offset + 4, *((int *) (local_buffer + offset)));
 		// memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
