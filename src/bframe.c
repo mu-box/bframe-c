@@ -43,7 +43,8 @@ count_bframes(char *data, int data_len)
 }
 
 bframe_t 
-*parse_char_to_bframes(char *data, int data_len, bframe_buffer_t *bframe_buffer, int *number_of_frames)
+*parse_char_to_bframes(char *data, int data_len, 
+	bframe_buffer_t *bframe_buffer, int *number_of_frames)
 {
 	char *local_buffer = NULL;
 	int local_buffer_len = 0;

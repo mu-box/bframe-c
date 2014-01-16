@@ -26,7 +26,8 @@ typedef struct bframe_buffer_s {
 bframe_buffer_t *new_bframe_buffer();
 
 bframe_t *new_bframe(char *data, int len);
-bframe_t *parse_char_to_bframes(char *data, int data_len, bframe_buffer_t *bframe_buffer, int *number_of_frames);
+bframe_t *parse_char_to_bframes(char *data, int data_len, 
+	bframe_buffer_t *bframe_buffer, int *number_of_frames);
 char *bframe_to_char(bframe_t *bframe, int *len);
 
 void clean_bframe_buffer(bframe_buffer_t *bframe_buffer);
