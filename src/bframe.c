@@ -43,13 +43,13 @@ count_bframes(char *data, int data_len)
 }
 
 bframe_t 
-*parse_char_to_bframes(char *data, int data_len, 
+**parse_char_to_bframes(char *data, int data_len, 
 	bframe_buffer_t *bframe_buffer, int *number_of_frames)
 {
 	char *local_buffer = NULL;
 	int local_buffer_len = 0;
 	bframe_len_t bframe_len;
-	bframe_t *bframes = NULL;
+	bframe_t **bframes = NULL;
 	int count = 0;
 	int offset = 0;
 
@@ -73,11 +73,12 @@ bframe_t
 	*number_of_frames = count_bframes(local_buffer, local_buffer_len);
 	bframes = (bframe_t *)malloc((sizeof *bframes) * (*number_of_frames));
 	while (count < *number_of_frames) {
-		memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
-		bframes[count].data = (char *)malloc(bframes[count].len.int_len + 1);
-		bframes[count].data[bframes[count].len.int_len] = '\0';
-		memcpy(bframes[count].data, local_buffer + offset + 4, bframes[count].len.int_len);
-		offset += bframes[count].len.int_len + 4;
+		bframes[count]= new_bframe(local_buffer + offset + 4, *((int *) (local_buffer + offset)));
+		// memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
+		// bframes[count].data = (char *)malloc(bframes[count].len.int_len + 1);
+		// bframes[count].data[bframes[count].len.int_len] = '\0';
+		// memcpy(bframes[count].data, local_buffer + offset + 4, bframes[count].len.int_len);
+		offset += bframes[count]->len.int_len + 4;
 		count++;
 	}
 	if (offset < local_buffer_len) {

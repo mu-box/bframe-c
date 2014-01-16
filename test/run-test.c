@@ -53,14 +53,14 @@ void test_parse_char_to_bframes()
 	int number_of_frames;
 	bframe_buffer_t *bframe_buffer = new_bframe_buffer();
 
-	bframe_t *parsed_bframes = parse_char_to_bframes(whole_message, total_size, bframe_buffer, &number_of_frames);
+	bframe_t **parsed_bframes = parse_char_to_bframes(whole_message, total_size, bframe_buffer, &number_of_frames);
 	printf("\t\tnumber of frames: %d\n", number_of_frames);
 	printf("\t\tbframe_buffer size: %d\n", bframe_buffer->len);
 	for (i = 0; i < number_of_frames; i++) {
-		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i].len.int_len, parsed_bframes[i].data);
+		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i]->len.int_len, parsed_bframes[i]->data);
 	}
 	for (i = 0; i < number_of_frames; i++) {
-		clean_bframe(&parsed_bframes[i]);
+		clean_bframe(parsed_bframes[i]);
 	}
 	free(parsed_bframes);
 	parsed_bframes = NULL;
@@ -74,10 +74,10 @@ void test_parse_char_to_bframes()
 	printf("\t\tnumber of frames: %d\n", number_of_frames);
 	printf("\t\tbframe_buffer size: %d\n", bframe_buffer->len);
 	for (i = 0; i < number_of_frames; i++) {
-		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i].len.int_len, parsed_bframes[i].data);
+		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i]->len.int_len, parsed_bframes[i]->data);
 	}
 	for (i = 0; i < number_of_frames; i++) {
-		clean_bframe(&parsed_bframes[i]);
+		clean_bframe(parsed_bframes[i]);
 	}
 	free(parsed_bframes);
 	parsed_bframes = NULL;
@@ -86,10 +86,10 @@ void test_parse_char_to_bframes()
 	printf("\t\tnumber of frames: %d\n", number_of_frames);
 	printf("\t\tbframe_buffer size: %d\n", bframe_buffer->len);
 	for (i = 0; i < number_of_frames; i++) {
-		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i].len.int_len, parsed_bframes[i].data);
+		printf("\t\tsize(%d) data(%s)\n", parsed_bframes[i]->len.int_len, parsed_bframes[i]->data);
 	}
 	for (i = 0; i < number_of_frames; i++) {
-		clean_bframe(&parsed_bframes[i]);
+		clean_bframe(parsed_bframes[i]);
 	}
 	free(parsed_bframes);
 	parsed_bframes = NULL;
