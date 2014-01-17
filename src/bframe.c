@@ -7,7 +7,7 @@ bframe_buffer_t
 *new_bframe_buffer()
 {
 	bframe_buffer_t *bframe_buffer;
-	bframe_buffer = malloc(sizeof *bframe_buffer);
+	bframe_buffer = malloc(sizeof(bframe_buffer_t));
 	bframe_buffer->data = NULL;
 	bframe_buffer->len = 0;
 	return bframe_buffer;
@@ -16,7 +16,7 @@ bframe_buffer_t
 bframe_t 
 *new_bframe(char *data, int length)
 {
-	bframe_t *bframe = (bframe_t *)malloc(sizeof *bframe);
+	bframe_t *bframe = (bframe_t *)malloc(sizeof(bframe_t));
 	bframe->len.int_len = (uint32_t)length;
 	bframe->data = (char *)malloc(length + 1);
 	bframe->data[length] = '\0';
@@ -71,7 +71,7 @@ bframe_t
 		bframe_buffer->len = 0;
 	}
 	*number_of_frames = count_bframes(local_buffer, local_buffer_len);
-	bframes = (bframe_t **)malloc((sizeof *bframes) * (*number_of_frames));
+	bframes = (bframe_t **)malloc(sizeof(bframe_t) * (*number_of_frames));
 	while (count < *number_of_frames) {
 		bframes[count]= new_bframe(local_buffer + offset + 4, *((int *) (local_buffer + offset)));
 		// memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
@@ -98,7 +98,7 @@ char
 	char *packed_frame;
 
 	*length = bframe->len.int_len + 4;
-	packed_frame = (char *)malloc((sizeof *packed_frame) * (*length) + 1);
+	packed_frame = (char *)malloc(sizeof(char) * (*length) + 1);
 	packed_frame[*length] = '\0';
 	memcpy(packed_frame, &(bframe->len.char_len), 4);
 	memcpy(packed_frame + 4, bframe->data, bframe->len.int_len);
