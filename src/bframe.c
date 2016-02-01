@@ -1,75 +1,123 @@
 // -*- mode: c; tab-width: 4; indent-tabs-mode: 1; st-rulers: [70] -*-
 // vim: ts=8 sw=8 ft=c noet
 
+#include <arpa/inet.h>
 #include "bframe.h"
-#include <stdlib.h>
-#include <string.h>
 
-static char *buffer = NULL;
-static int buffer_len = 0;
+bframe_buffer_t 
+*new_bframe_buffer()
+{
+	bframe_buffer_t *bframe_buffer;
+	bframe_buffer = malloc(sizeof(bframe_buffer_t));
+	bframe_buffer->data = NULL;
+	bframe_buffer->len = 0;
+	return bframe_buffer;
+}
+
+bframe_t 
+*new_bframe(char *data, int length)
+{
+	bframe_t *bframe = (bframe_t *)malloc(sizeof(bframe_t));
+	bframe->len.int_len = (uint32_t)length;
+	bframe->data = (char *)malloc(length + 1);
+	bframe->data[length] = '\0';
+	memcpy(bframe->data, data, length);
+	return bframe;
+}
 
 static int
 count_bframes(char *data, int data_len)
 {
-	int count = -1;
+	int count = 0;
 	int offset = 0;
-	bframe_len_t *bframe_len;
+	bframe_len_t bframe_len;
 	do {
 		count++;
-		bframe_len = (bframe_len_t *)(data + offset);
-		offset += bframe_len->int_len + 4;
+		bframe_len.int_len = ntohl(*((uint32_t *)(data + offset)));
+		offset += bframe_len.int_len + 4;
 	} while (offset < data_len - 4);
+
+	if (offset > data_len)
+		count--;
 
 	return count;
 }
 
 bframe_t 
-*parse_char_to_bframes(char *data, int data_len, int *number_of_frames)
+**parse_char_to_bframes(char *data, int data_len, 
+	bframe_buffer_t *bframe_buffer, int *number_of_frames)
 {
+	bframe_len_t bigend_len;
 	char *local_buffer = NULL;
 	int local_buffer_len = 0;
 	bframe_len_t bframe_len;
-	bframe_t *bframes = NULL;
+	bframe_t **bframes = NULL;
+	int count = 0;
+	int offset = 0;
 
-	if (buffer == NULL) {
+	if (bframe_buffer->data == NULL) {
 		local_buffer_len = data_len;
 		local_buffer = (char *)malloc(local_buffer_len + 1);
 		local_buffer[local_buffer_len] = '\0';
 		memcpy(local_buffer, data, data_len);
 
 	} else {
-		local_buffer_len = data_len + buffer_len;
+		local_buffer_len = data_len + bframe_buffer->len;
 		local_buffer = (char *)malloc(local_buffer_len + 1);
 		local_buffer[local_buffer_len] = '\0';
-		memcpy(local_buffer, buffer, buffer_len);
-		memcpy(local_buffer + buffer_len, data, data_len);
+		memcpy(local_buffer, bframe_buffer->data, bframe_buffer->len);
+		memcpy(local_buffer + bframe_buffer->len, data, data_len);
 
-		free(buffer);
-		buffer_len = 0;
+		free(bframe_buffer->data);
+		bframe_buffer->data = NULL;
+		bframe_buffer->len = 0;
 	}
 	*number_of_frames = count_bframes(local_buffer, local_buffer_len);
-	if (*number_of_frames) {
-		bframes = malloc((sizeof *bframes) * (*number_of_frames));
-	} else
-	{
-
+	bframes = (bframe_t **)malloc(sizeof(bframe_t *) * (*number_of_frames));
+	while (count < *number_of_frames) {
+		uint32_t len = htonl(*((uint32_t *) (local_buffer + offset)));
+		bframes[count]= new_bframe(local_buffer + offset + 4, len);
+		// memcpy(bframes[count].len.char_len, local_buffer + offset, 4);
+		// bframes[count].data = (char *)malloc(bframes[count].len.int_len + 1);
+		// bframes[count].data[bframes[count].len.int_len] = '\0';
+		// memcpy(bframes[count].data, local_buffer + offset + 4, bframes[count].len.int_len);
+		offset += len + 4;
+		count++;
 	}
-}
-
-bframe_t 
-*pack_bframe(char *data, int length)
-{
-
+	if (offset < local_buffer_len) {
+		bframe_buffer->len = local_buffer_len - offset;
+		bframe_buffer->data = (char *)malloc(bframe_buffer->len + 1);
+		bframe_buffer->data[bframe_buffer->len] = '\0';
+		memcpy(bframe_buffer->data, local_buffer + offset, bframe_buffer->len);
+	}
+	free(local_buffer);
+	local_buffer = NULL;
+	return bframes;
 }
 
 char 
 *bframe_to_char(bframe_t *bframe, int *length)
 {
-
+	char *packed_frame;
+	bframe_len_t bigend_len;
+	bigend_len.int_len = htonl(bframe->len.int_len);
+	*length = bframe->len.int_len + 4;
+	packed_frame = (char *)malloc(sizeof(char) * (*length) + 1);
+	packed_frame[*length] = '\0';
+	memcpy(packed_frame, &(bigend_len.char_len), 4);
+	memcpy(packed_frame + 4, bframe->data, bframe->len.int_len);
+	return packed_frame;
 }
 
 void clean_bframe(bframe_t *bframe)
 {
 	free(bframe->data);
 	bframe->data = NULL;
+}
+
+void clean_bframe_buffer(bframe_buffer_t *bframe_buffer)
+{
+	free(bframe_buffer->data);
+	bframe_buffer->data = NULL;
+	bframe_buffer->len = 0;
 }

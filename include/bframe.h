@@ -4,9 +4,9 @@
 #ifndef BFRAME_H
 #define BFRAME_H
 
-#ifndef uint32_t
 #include <stdint.h>
-#endif
+#include <stdlib.h>
+#include <string.h>
 
 typedef union bframe_len_s {
 	uint32_t	int_len;
@@ -18,10 +18,19 @@ typedef struct bframe_s {
 	char			*data;
 } bframe_t;
 
-bframe_t *parse_bframes(char *data, int data_len, int *number_of_frames);
-bframe_t *pack_bframe(char *data, int len);
+typedef struct bframe_buffer_s {
+	char	*data;
+	int		len;
+} bframe_buffer_t;
+
+bframe_buffer_t *new_bframe_buffer();
+
+bframe_t *new_bframe(char *data, int len);
+bframe_t **parse_char_to_bframes(char *data, int data_len, 
+	bframe_buffer_t *bframe_buffer, int *number_of_frames);
 char *bframe_to_char(bframe_t *bframe, int *len);
 
+void clean_bframe_buffer(bframe_buffer_t *bframe_buffer);
 void clean_bframe(bframe_t *bframe);
 
 #endif // BFRAME_H
