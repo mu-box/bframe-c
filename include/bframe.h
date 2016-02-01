@@ -6,6 +6,7 @@
 
 #ifndef uint32_t
 #include <stdint.h>
+#endif
 
 typedef union bframe_len_s {
 	uint32_t	int_len;
