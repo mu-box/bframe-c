@@ -2,6 +2,7 @@
 // vim: ts=8 sw=8 ft=c noet
 
 #include "bframe.h"
+#include <stdlib.h>
 
 static char *buffer = NULL;
 static int buffer_len = 0;
