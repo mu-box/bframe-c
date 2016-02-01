@@ -3,6 +3,7 @@
 
 #include "bframe.h"
 #include <stdlib.h>
+#include <string.h>
 
 static char *buffer = NULL;
 static int buffer_len = 0;
@@ -16,7 +17,7 @@ count_bframes(char *data, int data_len)
 	do {
 		count++;
 		bframe_len = (bframe_len_t *)(data + offset);
-		offset += bframe_len.int_len + 4;
+		offset += bframe_len->int_len + 4;
 	} while (offset < data_len - 4);
 
 	return count;
