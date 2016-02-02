@@ -1,3 +1,5 @@
 language: c
 
-script: autoreconf -vfi && ./configure && make && make test
+before_install:
+  - mkdir m4
+  - autoreconf -fvi
